@@ -24,6 +24,7 @@ Transfer your averages from each Weekly Summary.
 | Week 2 |  |  |  |  |
 | Week 3 |  |  |  |  |
 | Week 4 |  |  |  |  |
+| Week 5 |  |  |  |  |
 | Monthly Avg |  |  |  |  |
 
 ## 🪞 Reflection
