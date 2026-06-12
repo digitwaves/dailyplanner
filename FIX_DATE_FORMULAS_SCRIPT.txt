@@ -1,0 +1,19 @@
+/**
+ * BloomPlansCo Daily Planner
+ * Fixes the Thursday and Friday date formulas on the Google Sheet.
+ * Thursday was using a formula that only worked when the start date
+ * was a Monday; Friday was off by one (showed Thursday's date).
+ * Safe to run more than once.
+ */
+function fixDateFormulas() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var thu = ss.getSheetByName('Thursday');
+  var fri = ss.getSheetByName('Friday');
+  if (!thu || !fri) {
+    SpreadsheetApp.getUi().alert('Could not find the Thursday and/or Friday tabs.');
+    return;
+  }
+  thu.getRange('C3').setFormula("='How to Use'!E1 - WEEKDAY('How to Use'!E1, 3) + 3");
+  fri.getRange('C3').setFormula("='How to Use'!E1 - WEEKDAY('How to Use'!E1, 3) + 4");
+  SpreadsheetApp.getUi().alert('Done! Thursday and Friday now show the correct dates.');
+}

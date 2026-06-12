@@ -1,0 +1,228 @@
+function myFunction() {
+}
+
+function addCheckboxes() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+    if (name === "How to Use") continue;
+    var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+    if (days.indexOf(name) !== -1) {
+      sheet.getRange("H7:H12").clearDataValidations().clearContent().setDataValidation(rule);
+      sheet.getRange("B12:B19").clearDataValidations().clearContent().setDataValidation(rule);
+      sheet.getRange("I14:I19").clearDataValidations().clearContent().setDataValidation(rule);
+      sheet.getRange("I25:I28").clearDataValidations().clearContent().setDataValidation(rule);
+    }
+    if (name === "Weekly Summary") {
+      sheet.getRange("C8:I15").clearDataValidations().clearContent().setDataValidation(rule);
+    }
+    if (name === "Monthly Dashboard") {
+      sheet.getRange("F8:F12").clearDataValidations().clearContent().setDataValidation(rule);
+    }
+  }
+  SpreadsheetApp.getUi().alert("Checkboxes added!");
+}
+
+function addDatePickers() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var rule = SpreadsheetApp.newDataValidation().requireDate().build();
+  var today = new Date();
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+    if (days.indexOf(name) !== -1) {
+      sheet.getRange("A3:I3").breakApart();
+      sheet.getRange("A3:D3").merge().setValue("date:").setHorizontalAlignment("right");
+      sheet.getRange("E3").setNumberFormat("MM/dd/yyyy").setDataValidation(rule).setValue(today).setHorizontalAlignment("left");
+      sheet.getRange("F3:I3").merge();
+    }
+    if (name === "Weekly Summary") {
+      sheet.getRange("A3:J3").breakApart();
+      sheet.getRange("A3:D3").merge().setValue("Week of:").setHorizontalAlignment("right");
+      sheet.getRange("E3").setNumberFormat("MM/dd/yyyy").setDataValidation(rule).setValue(today).setHorizontalAlignment("left");
+      sheet.getRange("F3:J3").merge();
+    }
+    if (name === "Monthly Dashboard") {
+      sheet.getRange("A3:J3").breakApart();
+      sheet.getRange("A3:D3").merge().setValue("Month:").setHorizontalAlignment("right");
+      sheet.getRange("E3").setNumberFormat("MMMM yyyy").setDataValidation(rule).setValue(today).setHorizontalAlignment("left");
+      sheet.getRange("F3:J3").merge();
+    }
+  }
+  SpreadsheetApp.getUi().alert("Date pickers added!");
+}
+
+function fixColumnWidths() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+
+    if (days.indexOf(name) !== -1) {
+      sheet.setColumnWidth(1, 20);
+      sheet.setColumnWidth(2, 30);
+      sheet.setColumnWidth(3, 160);
+      sheet.setColumnWidth(4, 20);
+      sheet.setColumnWidth(5, 80);
+      sheet.setColumnWidth(6, 160);
+      sheet.setColumnWidth(7, 20);
+      sheet.setColumnWidth(8, 140);
+      sheet.setColumnWidth(9, 30);
+    }
+
+    if (name === "Weekly Summary") {
+      sheet.setColumnWidth(1, 20);
+      sheet.setColumnWidth(2, 150);
+      for (var c = 3; c <= 9; c++) {
+        sheet.setColumnWidth(c, 60);
+      }
+      sheet.setColumnWidth(10, 20);
+    }
+
+    if (name === "Monthly Dashboard") {
+      sheet.setColumnWidth(1, 20);
+      sheet.setColumnWidth(2, 140);
+      for (var c = 3; c <= 5; c++) {
+        sheet.setColumnWidth(c, 80);
+      }
+      sheet.setColumnWidth(6, 50);
+      sheet.setColumnWidth(7, 20);
+      sheet.setColumnWidth(8, 140);
+      sheet.setColumnWidth(9, 120);
+      sheet.setColumnWidth(10, 20);
+    }
+  }
+
+  SpreadsheetApp.getUi().alert("Column widths fixed!");
+}
+function fixLayout() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  var checkRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+
+    if (days.indexOf(name) !== -1) {
+
+      // Fix column widths
+      sheet.setColumnWidth(1, 20);
+      sheet.setColumnWidth(2, 30);
+      sheet.setColumnWidth(3, 160);
+      sheet.setColumnWidth(4, 20);
+      sheet.setColumnWidth(5, 80);
+      sheet.setColumnWidth(6, 160);
+      sheet.setColumnWidth(7, 10);
+      sheet.setColumnWidth(8, 150);
+      sheet.setColumnWidth(9, 30);
+
+      // Fix schedule: 12 AM to 12 AM (24 hours)
+      var hours = [
+        "12:00 AM","1:00 AM","2:00 AM","3:00 AM","4:00 AM","5:00 AM",
+        "6:00 AM","7:00 AM","8:00 AM","9:00 AM","10:00 AM","11:00 AM",
+        "12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM",
+        "6:00 PM","7:00 PM","8:00 PM","9:00 PM","10:00 PM","11:00 PM"
+      ];
+      for (var h = 0; h < hours.length; h++) {
+        sheet.getRange(7 + h, 5).setValue(hours[h]);
+      }
+
+      // Water intake: replace text squares with real checkboxes
+      // First clear the merged water cell
+      var waterRow = 25;
+      sheet.getRange("B" + waterRow + ":C" + waterRow).breakApart();
+      // Put 8 checkboxes across B25:I25
+      // Use B25 through I25 for 8 water glasses
+      sheet.getRange("B" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("C" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("D" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("E" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("F" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("G" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("H" + waterRow).clearContent().setDataValidation(checkRule);
+      sheet.getRange("I" + waterRow).clearContent().setDataValidation(checkRule);
+
+      // Fix gratitude: make it two columns with preserved numbering
+      var gratRow = 32;
+      for (var g = 0; g < 4; g++) {
+        var r = gratRow + g;
+        sheet.getRange("E" + r + ":I" + r).breakApart();
+        sheet.getRange("E" + r).setValue(g + 1 + ".");
+        sheet.getRange("E" + r).setHorizontalAlignment("right");
+        sheet.getRange("F" + r + ":I" + r).merge();
+      }
+    }
+  }
+
+  SpreadsheetApp.getUi().alert("Layout fixed!");
+}
+function fixEverything() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  var checkRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+
+    if (days.indexOf(name) !== -1) {
+
+      // Fix column widths - tight checkboxes, roomy content
+      sheet.setColumnWidth(1, 15);
+      sheet.setColumnWidth(2, 30);
+      sheet.setColumnWidth(3, 155);
+      sheet.setColumnWidth(4, 15);
+      sheet.setColumnWidth(5, 75);
+      sheet.setColumnWidth(6, 155);
+      sheet.setColumnWidth(7, 10);
+      sheet.setColumnWidth(8, 145);
+      sheet.setColumnWidth(9, 30);
+
+      // Restore schedule: 5 AM to 11 PM (practical full day)
+      var times = [
+        "5:00 AM","6:00 AM","7:00 AM","8:00 AM","9:00 AM","10:00 AM",
+        "11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM",
+        "5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM","10:00 PM","11:00 PM"
+      ];
+      // Clear all schedule cells first (rows 7-30 col E)
+      for (var r = 7; r <= 30; r++) {
+        sheet.getRange(r, 5).clearContent();
+      }
+      // Write schedule back to original rows
+      for (var h = 0; h < times.length && h < 16; h++) {
+        sheet.getRange(7 + h, 5).setValue(times[h]);
+      }
+
+      // Fix water intake: clear old content, put 8 checkboxes in B25:I25
+      sheet.getRange("B25:I25").breakApart();
+      sheet.getRange("B25:I25").clearContent();
+      sheet.getRange("B25:I25").clearDataValidations();
+      for (var w = 2; w <= 9; w++) {
+        sheet.getRange(25, w).setDataValidation(checkRule);
+      }
+
+      // Fix gratitude: two columns with numbering
+      for (var g = 0; g < 4; g++) {
+        var r = 32 + g;
+        sheet.getRange("E" + r + ":I" + r).breakApart();
+        sheet.getRange("E" + r).setValue((g + 1) + ".");
+        sheet.getRange("E" + r).setHorizontalAlignment("right");
+        sheet.getRange("F" + r + ":I" + r).merge();
+        sheet.getRange("F" + r).setHorizontalAlignment("left");
+      }
+    }
+  }
+
+  SpreadsheetApp.getUi().alert("Everything fixed!");
+}

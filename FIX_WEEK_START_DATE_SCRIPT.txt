@@ -1,0 +1,59 @@
+/**
+ * BloomPlansCo Daily Planner
+ * Redesigns the Week Start Date picker on the "How to Use" tab.
+ * Safe to run more than once (won't stack extra rows).
+ * The date stays in cell E1, so all 7 day tabs keep working.
+ */
+function fixWeekStartDatePicker() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('How to Use');
+  if (!sheet) {
+    SpreadsheetApp.getUi().alert('Could not find a tab named "How to Use".');
+    return;
+  }
+
+  // Guard: only insert the helper row the first time
+  var alreadyDone = String(sheet.getRange('B2').getValue()).indexOf('Double-click') !== -1;
+  if (!alreadyDone) {
+    sheet.insertRowsAfter(1, 1);
+  }
+
+  // Row heights
+  sheet.setRowHeight(1, 44);
+  sheet.setRowHeight(2, 32);
+
+  // --- Instruction label in B1:D1 ---
+  var label = sheet.getRange('B1:D1');
+  try { label.breakApart(); } catch (e) {}
+  label.merge();
+  label.setValue('📅  SET YOUR WEEK START DATE  →')
+       .setFontWeight('bold')
+       .setFontSize(11)
+       .setFontColor('#C4917B')
+       .setHorizontalAlignment('right')
+       .setVerticalAlignment('middle');
+
+  // --- Date "button" in E1 ---
+  sheet.getRange('E1')
+       .setBackground('#F8C8D6')
+       .setFontWeight('bold')
+       .setFontSize(12)
+       .setHorizontalAlignment('center')
+       .setVerticalAlignment('middle')
+       .setBorder(true, true, true, true, false, false,
+                  '#C4917B', SpreadsheetApp.BorderStyle.SOLID_THICK);
+
+  // --- Helper line in B2:E2 ---
+  var help = sheet.getRange('B2:E2');
+  try { help.breakApart(); } catch (e) {}
+  help.merge();
+  help.setValue('✨ Double-click the pink box to open a calendar — or just type a date. '
+              + 'Pick the Monday your week begins, and all 7 day tabs fill in automatically.')
+      .setFontStyle('italic')
+      .setFontSize(9)
+      .setFontColor('#8A8A8A')
+      .setVerticalAlignment('middle')
+      .setWrap(true);
+
+  SpreadsheetApp.getUi().alert('Done! The Week Start Date picker has been redesigned on the "How to Use" tab.');
+}

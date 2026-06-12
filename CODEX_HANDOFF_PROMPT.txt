@@ -1,0 +1,41 @@
+You are picking up work on a digital daily-planner product called BloomPlansCo (sold on Etsy) that ships in three versions: Google Sheets, Notion, and Excel. The Notion version has 5 gratitude entries per day; the Excel and Google Sheets versions currently have only 4. The "How to Use" tab also still says "Schedule (6 AM – 9 PM)" even though the real schedule is 24-hour (12 AM – 11 PM). Reconcile the Excel and Sheets so all three versions match.
+
+WORKING FOLDER (Windows):
+  C:\Users\Charles\Documents\dwm\BloomPlansCo\Daily Planner\
+
+FILES:
+  - Daily_Planner_Tracker_final v9.xlsx   (archive copy of the live Google Sheet — read-only reference for structure)
+  - Daily_Planner_Tracker_Excel.xlsx       (the sellable Excel edition — edit this in place)
+  - The live Google Sheet "Daily_Planner_Tracker_final v9" on the owner's Drive cannot be edited directly; you must produce an Apps Script the owner will paste and run.
+
+TASKS
+
+1. Edit Daily_Planner_Tracker_Excel.xlsx in place using openpyxl.
+   a. On each of the 7 day tabs (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday), the Gratitude section has rows labeled 1, 2, 3, 4. Find the row holding label "4" and add an identical row immediately below it with label "5". The new row must match the row-4 source in: row height, font, fill, alignment, number format, borders, and any merged-cell pattern. Apply the change to all 7 day tabs.
+   b. On the "How to Use" tab, find the cell whose text contains "Schedule (6 AM – 9 PM)" and replace that substring with "Schedule (24-hour)". Do not modify any other text on that tab.
+
+2. Produce a Google Apps Script file at:
+     C:\Users\Charles\Documents\dwm\BloomPlansCo\Daily Planner\FIX_GRATITUDE_AND_WORDING_SCRIPT.txt
+   Function name: fixGratitudeAndWording. When run inside the active spreadsheet it must:
+   a. Add the same 5th gratitude row to each of Monday–Sunday, mirroring the structure of row 4 (insertRowsAfter + copy formatting from the row-4 range).
+   b. Replace "Schedule (6 AM – 9 PM)" with "Schedule (24-hour)" on the "How to Use" tab.
+   c. Be idempotent — skip a sheet that already shows a "5" label below the "4" label, so re-running causes no duplication.
+   d. End with SpreadsheetApp.getUi().alert('Done.') so the non-technical owner sees confirmation.
+
+CONSTRAINTS (do not break what works)
+  - Do not touch the date formula in C3 of any day tab.
+  - Do not modify any other cell value, formula, fill, font, merged range, or data validation.
+  - Specifically do not alter the data validation on 'How to Use'!E1 or its pink-button styling.
+  - Preserve all existing column widths and row heights except for the one new gratitude row you add (which should match row 4's height).
+
+VERIFICATION (perform before declaring done)
+  - Re-open Daily_Planner_Tracker_Excel.xlsx with openpyxl. For each of the 7 day tabs, assert the gratitude column on that sheet contains cells with the literal values 1, 2, 3, 4, AND 5 (in that order, in consecutive rows).
+  - Assert the string "Schedule (6 AM – 9 PM)" does not appear anywhere in the workbook.
+  - Assert "Schedule (24-hour)" appears exactly once, on the "How to Use" tab.
+  - Convert the edited xlsx to PDF with LibreOffice headless (`soffice --headless --calc --convert-to pdf`) and visually spot-check the Monday tab and one other day tab: the "5" entry should sit directly below "4" with matching styling.
+  - Lint the Apps Script for syntax (no eval, no missing brackets), and confirm the idempotency guard works by mentally tracing a second run.
+
+DELIVERABLES
+  - Modified Daily_Planner_Tracker_Excel.xlsx in place.
+  - New FIX_GRATITUDE_AND_WORDING_SCRIPT.txt.
+  - A short summary in chat of what changed and how you verified it.

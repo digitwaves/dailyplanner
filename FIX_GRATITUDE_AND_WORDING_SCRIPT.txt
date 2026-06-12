@@ -1,0 +1,93 @@
+function fixGratitudeAndWording() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var oldText = 'Schedule (6 AM \u2013 9 PM)';
+  var newText = 'Schedule (24-hour)';
+
+  dayNames.forEach(function(dayName) {
+    var sheet = ss.getSheetByName(dayName);
+    if (!sheet) {
+      throw new Error('Missing sheet: ' + dayName);
+    }
+
+    var rowInfo = findGratitudeFourRow_(sheet);
+    if (!rowInfo) {
+      throw new Error('Could not find gratitude rows on ' + dayName);
+    }
+
+    var sourceRow = rowInfo.row;
+    var labelColumn = rowInfo.column;
+    var nextValue = sheet.getRange(sourceRow + 1, labelColumn).getValue();
+    if (labelEquals_(nextValue, 5)) {
+      return;
+    }
+
+    sheet.insertRowsAfter(sourceRow, 1);
+
+    var maxColumns = sheet.getMaxColumns();
+    var sourceRange = sheet.getRange(sourceRow, 1, 1, maxColumns);
+    var targetRange = sheet.getRange(sourceRow + 1, 1, 1, maxColumns);
+
+    sourceRange.copyTo(targetRange, SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+    targetRange.clearContent();
+    sheet.getRange(sourceRow + 1, labelColumn).setValue(5);
+    sheet.setRowHeight(sourceRow + 1, sheet.getRowHeight(sourceRow));
+
+    sourceRange.getMergedRanges().forEach(function(mergedRange) {
+      sheet.getRange(
+        sourceRow + 1,
+        mergedRange.getColumn(),
+        1,
+        mergedRange.getNumColumns()
+      ).merge();
+    });
+  });
+
+  var howToUse = ss.getSheetByName('How to Use');
+  if (!howToUse) {
+    throw new Error('Missing sheet: How to Use');
+  }
+
+  var textFinder = howToUse.createTextFinder(oldText)
+    .matchCase(true)
+    .useRegularExpression(false);
+  textFinder.findAll().forEach(function(cell) {
+    var value = cell.getValue();
+    if (typeof value === 'string' && value.indexOf(oldText) !== -1) {
+      cell.setValue(value.replace(oldText, newText));
+    }
+  });
+
+  SpreadsheetApp.getUi().alert('Done.');
+}
+
+function findGratitudeFourRow_(sheet) {
+  var values = sheet.getDataRange().getValues();
+
+  for (var r = 0; r < values.length; r++) {
+    for (var c = 0; c < values[r].length; c++) {
+      var value = values[r][c];
+      if (typeof value === 'string' && value.toLowerCase().indexOf('gratitude') !== -1) {
+        for (var start = r + 1; start + 3 < values.length && start < r + 20; start++) {
+          if (
+            labelEquals_(values[start][c], 1) &&
+            labelEquals_(values[start + 1][c], 2) &&
+            labelEquals_(values[start + 2][c], 3) &&
+            labelEquals_(values[start + 3][c], 4)
+          ) {
+            return {
+              row: start + 4,
+              column: c + 1
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function labelEquals_(value, expected) {
+  return value === expected || String(value).trim() === String(expected);
+}

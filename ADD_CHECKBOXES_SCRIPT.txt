@@ -1,0 +1,208 @@
+HOW TO SET UP YOUR PLANNER (One-Time Setup — Takes 30 Seconds!)
+================================================================
+
+After uploading the planner to Google Sheets:
+
+1. Go to Extensions > Apps Script
+2. Delete ALL code in the editor (Ctrl+A, then Delete)
+3. Paste the ENTIRE script below (everything between the lines)
+4. Make sure the dropdown next to Run says "setupPlanner"
+5. Click the Run button
+6. Approve permissions when prompted
+7. Done! You'll see a popup confirming setup is complete.
+
+======================== COPY BELOW THIS LINE ========================
+
+function setupPlanner() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var cbRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+  var dateRule = SpreadsheetApp.newDataValidation().requireDate().build();
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  var roseGold = "#B76E79";
+  var cream = "#FFF8F0";
+  var blush = "#F5E6E0";
+  var lightLav = "#F0EAF8";
+  var pink = "#F0D4CC";
+  var sage = "#D5E5D5";
+  var lavender = "#E8E0F0";
+  var darkText = "#4A3728";
+
+  var quotes = [
+    '"You are doing better than you think." ✿',
+    '"Progress, not perfection." ✿',
+    '"Small steps still move you forward." ✿',
+    '"Be gentle with yourself today." ✿',
+    '"You are worthy of good things." ✿',
+    '"Bloom where you are planted." ✿',
+    '"Every day is a fresh start." ✿'
+  ];
+
+  for (var s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    var name = sheet.getName();
+
+    if (name === "How to Use") continue;
+
+    // ──────────────────────────────────
+    // DAILY SHEETS (Mon-Sun)
+    // ──────────────────────────────────
+    var dayIdx = days.indexOf(name);
+    if (dayIdx !== -1) {
+
+      // Column widths
+      sheet.setColumnWidth(1, 30);
+      sheet.setColumnWidth(2, 160);
+      sheet.setColumnWidth(3, 12);
+      sheet.setColumnWidth(4, 70);
+      sheet.setColumnWidth(5, 160);
+      sheet.setColumnWidth(6, 12);
+      sheet.setColumnWidth(7, 30);
+      sheet.setColumnWidth(8, 160);
+      sheet.setColumnWidth(9, 70);
+
+      // --- Date picker in D3:F3 ---
+      var dateRange = sheet.getRange("D3:F3");
+      dateRange.breakApart();
+      dateRange.merge();
+      dateRange.setDataValidation(dateRule);
+      dateRange.setNumberFormat("MM / dd / yyyy");
+
+      // --- Daily Goals checkboxes: G7:G12 ---
+      var dg = sheet.getRange("G7:G12");
+      dg.clearDataValidations();
+      dg.clearContent();
+      dg.setDataValidation(cbRule);
+
+      // --- To-Do List checkboxes: A12:A25 ---
+      var td = sheet.getRange("A12:A25");
+      td.clearDataValidations();
+      td.clearContent();
+      td.setDataValidation(cbRule);
+
+      // --- Habit Tracker checkboxes: G14:G19 ---
+      var ht = sheet.getRange("G14:G19");
+      ht.clearDataValidations();
+      ht.clearContent();
+      ht.setDataValidation(cbRule);
+
+      // --- Extra right-side checkboxes: G20:G25 ---
+      var er = sheet.getRange("G20:G25");
+      er.clearDataValidations();
+      er.clearContent();
+      er.setDataValidation(cbRule);
+
+      // --- Water Intake checkboxes: A33:A36 ---
+      var wi = sheet.getRange("A33:A36");
+      wi.clearDataValidations();
+      wi.clearContent();
+      wi.setDataValidation(cbRule);
+
+      // --- Self-Care checkboxes: G33:G36 ---
+      var sc = sheet.getRange("G33:G36");
+      sc.clearDataValidations();
+      sc.clearContent();
+      sc.setDataValidation(cbRule);
+
+      // --- Extra Mood checkboxes: D38:D42 ---
+      var em = sheet.getRange("D38:D42");
+      em.clearDataValidations();
+      em.clearContent();
+      em.setDataValidation(cbRule);
+
+      // --- Extra Self-Care checkboxes: G38:G42 ---
+      var esc = sheet.getRange("G38:G42");
+      esc.clearDataValidations();
+      esc.clearContent();
+      esc.setDataValidation(cbRule);
+
+      // ──────────────────────────────────
+      // FIX NOTES & GRATITUDE SECTION
+      // ──────────────────────────────────
+
+      // Row 43: bar
+      sheet.setRowHeight(43, 6);
+
+      // Row 44: Headers
+      sheet.getRange("A44").setValue("✿  NOTES").setFontFamily("Georgia").setFontSize(10).setFontWeight("bold").setFontColor(roseGold).setBackground(lightLav);
+      sheet.getRange("B44").setBackground(lightLav);
+      sheet.getRange("D44").setValue("♡  GRATITUDE").setFontFamily("Georgia").setFontSize(10).setFontWeight("bold").setFontColor(roseGold).setBackground(lightLav);
+      sheet.getRange("E44:H44").setBackground(lightLav);
+      sheet.setRowHeight(44, 24);
+
+      // Rows 45-49: Notes lines (A:B) and Gratitude entries (D=number, E=text)
+      for (var i = 0; i < 5; i++) {
+        var r = 45 + i;
+        sheet.setRowHeight(r, 24);
+
+        // Notes area — dotted bottom border for writing lines
+        sheet.getRange(r, 1, 1, 2).setBorder(false, false, true, false, false, false, pink, SpreadsheetApp.BorderStyle.DOTTED);
+
+        // Gratitude number
+        sheet.getRange(r, 4).setValue((i + 1) + ".").setFontFamily("Arial").setFontSize(9).setFontColor(darkText).setHorizontalAlignment("right");
+
+        // Gratitude text area — dotted bottom border
+        sheet.getRange(r, 5, 1, 4).setBorder(false, false, true, false, false, false, pink, SpreadsheetApp.BorderStyle.DOTTED);
+      }
+
+      // Row 50: bar
+      sheet.setRowHeight(50, 6);
+
+      // Row 51: Quote
+      sheet.getRange("A51:I51").breakApart();
+      sheet.getRange("A51:I51").merge();
+      sheet.getRange("A51").setValue(quotes[dayIdx]).setFontFamily("Georgia").setFontSize(8).setFontColor(roseGold).setFontStyle("italic").setHorizontalAlignment("center").setBackground(blush);
+      sheet.setRowHeight(51, 26);
+
+      // Clear any stray content below row 51
+      var lastRow = sheet.getMaxRows();
+      if (lastRow > 51) {
+        sheet.getRange(52, 1, lastRow - 51, 9).clearContent().clearDataValidations();
+      }
+    }
+
+    // ──────────────────────────────────
+    // WEEKLY SUMMARY
+    // ──────────────────────────────────
+    if (name === "Weekly Summary") {
+      sheet.setColumnWidth(1, 120);
+      sheet.setColumnWidth(2, 12);
+      for (var c = 3; c <= 9; c++) {
+        sheet.setColumnWidth(c, 55);
+      }
+
+      var wh = sheet.getRange("C8:I15");
+      wh.clearDataValidations();
+      wh.clearContent();
+      wh.setDataValidation(cbRule);
+
+      for (var c = 3; c <= 9; c++) {
+        var col = String.fromCharCode(64 + c);
+        sheet.getRange(16, c).setFormula("=COUNTIF(" + col + "8:" + col + "15,TRUE)");
+      }
+    }
+
+    // ──────────────────────────────────
+    // MONTHLY DASHBOARD
+    // ──────────────────────────────────
+    if (name === "Monthly Dashboard") {
+      sheet.setColumnWidth(1, 30);
+      sheet.setColumnWidth(2, 160);
+
+      var mg = sheet.getRange("A7:A11");
+      mg.clearDataValidations();
+      mg.clearContent();
+      mg.setDataValidation(cbRule);
+    }
+  }
+
+  SpreadsheetApp.getUi().alert(
+    "✿ Planner Setup Complete! ✿\n\n" +
+    "All checkboxes, date pickers, notes lines,\n" +
+    "and gratitude entries have been set up.\n\n" +
+    "Click any checkbox to check it off.\n" +
+    "Click the date field to pick a date."
+  );
+}
+
+======================== COPY ABOVE THIS LINE ========================
