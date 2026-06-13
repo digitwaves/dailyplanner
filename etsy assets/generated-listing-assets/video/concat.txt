@@ -1,0 +1,13 @@
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_01.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_02.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_03.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_04.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_05.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_06.jpg'
+duration 1.8
+file 'C:/Users/Charles/Documents/dwm/BloomPlansCo/Daily Planner/etsy assets/generated-listing-assets/video/frame_06.jpg'
